@@ -15,7 +15,7 @@ export default function Login() {
     try {
       const response = await login(username, password);
       localStorage.setItem("token", response.data.token);
-      router.push("/"); // Redirect to home page after login
+      router.push("/home"); // Redirect to home page after login
     } catch (err) {
       if ((err as any)?.response?.data?.error) {
         setError((err as any).response.data.error);

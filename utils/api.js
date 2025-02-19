@@ -22,16 +22,18 @@ export const getProductById = async (id) => {
 
 // Cart Actions
 export const getCart = async (token) => {
-  return axios.get(`${API_BASE_URL}/cart`, {
-    headers: { Authorization: `Bearer ${token}` },
+  return axios.get(`${API_BASE_URL}/cart`,
+ { headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 export const addToCart = async (product_id, quantity, token) => {
-  return axios.post(`${API_BASE_URL}/cart`, { product_id, quantity }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
+    return axios.post(`${API_BASE_URL}/cart`,
+      { cust_id: 1, product_id, quantity }, 
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  };
+  
 
 // Checkout
 export const checkout = async (token) => {

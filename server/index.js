@@ -93,16 +93,24 @@ app.get("/cart", authenticateToken, (req, res) => {
 });
 
 // Protected Route: Add Item to Cart
-app.post("/cart", authenticateToken, (req, res) => {
-  const { product_id, quantity } = req.body;
-  if (!product_id || !quantity) return res.status(400).json({ error: "Missing fields" });
-
-  const query = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-  db.query(query, [req.user.userId, product_id, quantity], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: "Item added to cart" });
+app.post("/cart", (req, res) => {
+    const { cust_id, product_id, quantity } = req.body;
+    if (!cust_id || !product_id || !quantity) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+  
+    const query = `
+      INSERT INTO cart (cust_id, product_id, quantity)
+      VALUES (?, ?, ?)
+      ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+    `;
+    db.query(query, [cust_id, product_id, quantity], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "Item added to cart" });
+    });
   });
-});
+  
+  
 
 // Get User Order History
 app.get("/orders", authenticateToken, (req, res) => {
@@ -129,6 +137,17 @@ app.get("/products", (req, res) => {
     });
   });
   
+  app.get("/products/:id", (req, res) => {
+    const productId = req.params.id;
+    const query = "SELECT * FROM products WHERE id = ?";
+    db.query(query, [productId], (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0) return res.status(404).json({ error: "Product not found" });
+      res.json(results[0]);
+    });
+  });
+  
+
 
 // Default Route
 app.get("/", (req, res) => {

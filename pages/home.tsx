@@ -45,7 +45,7 @@ export default function Home() {
               <img src={product.image_url} alt={product.name} className="w-full h-40 object-cover rounded-md" />
               <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
               <p className="text-gray-600">${product.price}</p>
-              <Link href={`/product/${product.id}`}>
+              <Link href={`/hycard/${product.id}`}>
                 <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
                   View Details
                 </button>
