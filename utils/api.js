@@ -1,4 +1,6 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
 
 const API_BASE_URL = "http://192.168.1.16:2000";
 
@@ -28,10 +30,21 @@ export const getCart = async (token) => {
 };
 
 export const addToCart = async (product_id, quantity, token) => {
-    return axios.post(`${API_BASE_URL}/cart`,
-      { cust_id: 1, product_id, quantity }, 
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    if (!token) throw new Error("User not authenticated");
+  
+    try {
+      const decoded = jwtDecode(token); // Decode JWT
+      const cust_id = decoded.cust_id; // Extract `cust_id`
+  
+      return axios.post(
+        `${API_BASE_URL}/cart`,
+        { cust_id, product_id, quantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("Error decoding token:", err);
+      throw new Error("Invalid token");
+    }
   };
   
 

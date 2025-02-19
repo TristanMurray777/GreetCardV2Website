@@ -34,14 +34,14 @@ const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization");
   if (!token) return res.status(401).json({ error: "Access denied" });
 
-  jwt.verify(token.replace("Bearer ", ""), SECRET_KEY, (err, user) => {
+  jwt.verify(token.replace("Bearer ", ""), SECRET_KEY, (err, customer) => {
     if (err) return res.status(403).json({ error: "Invalid token" });
-    req.user = user;
+    req.customer = customer;
     next();
   });
 };
 
-// User Signup
+// Customer Signup
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: "Missing fields" });
@@ -50,69 +50,78 @@ app.post("/signup", async (req, res) => {
   const query = "INSERT INTO customer (username, password) VALUES (?, ?)";
   db.query(query, [username, hashedPassword], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "Customer registered successfully" });
   });
 });
 
-// User Login
+// Customer Login
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: "Missing fields" });
 
-  const query = "SELECT * FROM customer WHERE username = ?";
+  const query = "SELECT cust_id, username, password FROM customer WHERE username = ?";
   db.query(query, [username], async (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(401).json({ error: "Invalid credentials" });
 
-    const user = results[0];
-    const match = await bcrypt.compare(password, user.password);
+    const customer = results[0];
+    const match = await bcrypt.compare(password, customer.password);
     if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ userId: user.id, username: user.username }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { cust_id: customer.cust_id, username: customer.username },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
     res.json({ message: "Login successful", token });
   });
 });
 
-// Protected Route: Get User Details
-app.get("/user", authenticateToken, (req, res) => {
-  const query = "SELECT id, username FROM customer WHERE id = ?";
-  db.query(query, [req.user.userId], (err, results) => {
+// Protected Route: Get Customer Details
+app.get("/customer", authenticateToken, (req, res) => {
+  const query = "SELECT cust_id, username FROM customer WHERE cust_id = ?";
+  db.query(query, [req.customer.cust_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    if (results.length === 0) return res.status(404).json({ error: "User not found" });
+    if (results.length === 0) return res.status(404).json({ error: "Customer not found" });
     res.json(results[0]);
   });
 });
 
 // Protected Route: Get Cart Items
 app.get("/cart", authenticateToken, (req, res) => {
-  const query = "SELECT * FROM cart WHERE user_id = ?";
-  db.query(query, [req.user.userId], (err, results) => {
+  const query = `
+    SELECT c.id, p.name, p.price, c.quantity, p.image_url
+    FROM cart c
+    JOIN products p ON c.product_id = p.id
+    WHERE c.cust_id = ?;
+  `;
+  db.query(query, [req.customer.cust_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
 });
 
+
 // Protected Route: Add Item to Cart
 app.post("/cart", (req, res) => {
-    const { cust_id, product_id, quantity } = req.body;
-    if (!cust_id || !product_id || !quantity) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-  
-    const query = `
-      INSERT INTO cart (cust_id, product_id, quantity)
-      VALUES (?, ?, ?)
-      ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
-    `;
-    db.query(query, [cust_id, product_id, quantity], (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ message: "Item added to cart" });
-    });
-  });
-  
-  
+  const { cust_id, product_id, quantity } = req.body;
+  if (!cust_id || !product_id || !quantity) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
-// Get User Order History
+  const query = `
+    INSERT INTO cart (cust_id, product_id, quantity)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+  `;
+  db.query(query, [cust_id, product_id, quantity], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Item added to cart" });
+  });
+});
+
+// Get Customer Order History
 app.get("/orders", authenticateToken, (req, res) => {
   const query = `
     SELECT o.id AS order_id, o.status, o.created_at, 
@@ -120,14 +129,15 @@ app.get("/orders", authenticateToken, (req, res) => {
     FROM orders o 
     JOIN order_items oi ON o.id = oi.order_id 
     JOIN products p ON oi.product_id = p.id 
-    WHERE o.user_id = ? 
+    WHERE o.cust_id = ? 
     ORDER BY o.created_at DESC`;
   
-  db.query(query, [req.user.userId], (err, results) => {
+  db.query(query, [req.customer.cust_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);
   });
 });
+
 
 app.get("/products", (req, res) => {
     const query = "SELECT * FROM products";
@@ -147,7 +157,6 @@ app.get("/products", (req, res) => {
     });
   });
   
-
 
 // Default Route
 app.get("/", (req, res) => {

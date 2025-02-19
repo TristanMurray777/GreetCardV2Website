@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getProductById, addToCart } from "../../utils/api";
-import "../../styles/globals.css"; 
-
-
+import "../../styles/globals.css";
 
 interface Product {
   id: number;
@@ -13,10 +11,12 @@ interface Product {
   image_url: string;
 }
 
+
 export default function ProductDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1); // New state for quantity
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -26,7 +26,7 @@ export default function ProductDetail() {
     async function fetchProduct() {
       try {
         const response = await getProductById(id as string);
-        setProduct(response.data);
+        setProduct(response.data); // ✅ Make sure this matches Product type
       } catch (err) {
         setError("Failed to load product.");
       } finally {
@@ -35,18 +35,20 @@ export default function ProductDetail() {
     }
     fetchProduct();
   }, [id]);
+  
 
   const handleAddToCart = async () => {
     setMessage(""); // Reset message
-    if (!product) return;
+    if (!product) return; // Prevents TypeScript error
     try {
-      const token = localStorage.getItem("token"); // Retrieve JWT token for authentication
-      await addToCart(product.id, 1, token); // Call API to add product to cart
+      const token = localStorage.getItem("token"); // Retrieve JWT token
+      await addToCart(product.id, quantity, token); // Send selected quantity
       setMessage("✅ Item added to cart! 🛒");
     } catch (err) {
       setMessage("❌ Failed to add item to cart.");
     }
   };
+  
 
   if (loading) return <p className="text-center text-gray-600">Loading product...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -59,14 +61,26 @@ export default function ProductDetail() {
         <h1 className="text-3xl font-bold mt-4">{product.name}</h1>
         <p className="text-gray-600 mt-2">{product.description}</p>
         <p className="text-xl font-semibold text-blue-600 mt-4">${product.price}</p>
+
+        {/* Quantity Selector */}
+        <div className="mt-4">
+          <label className="block text-gray-600 mb-1">Quantity</label>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+            min="1"
+            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
         <button 
-        onClick={handleAddToCart}
-        className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-          Add to Cart
+          onClick={handleAddToCart}
+          className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+          Add to Cart 🛒
         </button>
 
         {message && <p className="mt-2 text-center text-green-600">{message}</p>}
-
       </div>
     </div>
   );

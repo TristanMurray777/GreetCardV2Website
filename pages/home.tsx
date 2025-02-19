@@ -34,6 +34,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-center mb-8">Welcome to HyCards Store</h1>
+      <Link href="/cart">   
+      <div className="flex justify-end">
+      <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition mb-4  "> 
+             View Cart 🛒 
+          </button>
+          </div>
+        </Link>
       {loading ? (
         <p className="text-center text-gray-600">Loading products...</p>
       ) : error ? (
@@ -44,7 +51,7 @@ export default function Home() {
             <div key={product.id} className="bg-white p-4 rounded-lg shadow-lg">
               <img src={product.image_url} alt={product.name} className="w-full h-40 object-cover rounded-md" />
               <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
-              <p className="text-gray-600">${product.price}</p>
+              <p className="text-gray-600">${product.price ? Number(product.price).toFixed(2) : "0.00"}</p>
               <Link href={`/hycard/${product.id}`}>
                 <button className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
                   View Details
