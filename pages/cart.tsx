@@ -10,6 +10,8 @@ interface CartItem {
   quantity: number;
   image_url: string;
   preload_amount?: number; // ✅ Include the pre-load amount
+  custom_message?: string; // ✅ Added Custom Message
+  uploaded_image?: string; // ✅ Added Uploaded Image
 }
 
 export default function Cart() {
@@ -36,15 +38,17 @@ export default function Cart() {
   }, []);
 
   const calculateTotal = () => {
-    return cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity) + (item.preload_amount || 0), 0).toFixed(2);
+    return cart.reduce((sum, item) => 
+      sum + (Number(item.price) * item.quantity) + Number(item.preload_amount || 0), 0
+    ).toFixed(2);
   };
 
   if (loading) return <p className="text-center text-gray-600">Loading cart...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">Your Cart 🛒</h1>
+    <div className="min-h-screen p-6">
+      <h1 className="text-3xl font-bold text-center text-white mb-8">Your Cart 🛒</h1>
       {cart.length === 0 ? (
         <p className="text-center text-gray-600">Your cart is empty.</p>
       ) : (
@@ -55,26 +59,42 @@ export default function Cart() {
                 <img src={item.image_url} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
                 <div>
                   <h2 className="text-lg font-semibold">{item.name}</h2>
-                  <p className="text-gray-600">${item.price ? Number(item.price).toFixed(2) : "0.00"} x {item.quantity}</p>
+                  <p className="text-gray-600">€{item.price ? Number(item.price).toFixed(2) : "0.00"} x {item.quantity}</p>
                   {item.preload_amount && item.preload_amount > 0 && (
-                    <p className="text-green-600">Pre-loaded: ${Number(item.preload_amount).toFixed(2)}</p>
+                    <p className="text-green-600">Pre-loaded: €{Number(item.preload_amount).toFixed(2)}</p>
+                  )}
+
+                  {/* ✅ Display Custom Message if Available */}
+                  {item.custom_message && (
+                    <p className="text-gray-600 italic">"📜 {item.custom_message}"</p>
+                  )}
+
+                  {/* ✅ Display Uploaded Image if Available */}
+                  {item.uploaded_image && (
+                    <img src={item.uploaded_image} alt="Uploaded Image" className="mt-2 w-24 h-24 object-cover rounded-md" />
                   )}
                 </div>
               </div>
-              <p className="text-lg font-semibold">${(Number(item.price) * item.quantity + (item.preload_amount || 0)).toFixed(2)}</p>
+              <p className="text-lg font-semibold">
+                €{((Number(item.price) * item.quantity) + Number(item.preload_amount || 0)).toFixed(2)}
+              </p>
             </div>
           ))}
 
           <div className="mt-6 text-right">
-            <h2 className="text-xl font-bold">Total: ${calculateTotal()}</h2>
+            <h2 className="text-xl font-bold">Total: €{calculateTotal()}</h2>
             <button
               onClick={() => router.push("/home")}
               className="mt-4 mr-5 bg-gray-600 text-white px-14 py-2 rounded-md hover:bg-gray-700 transition">
               Go Back
             </button>
-            <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+            
+            <button 
+              onClick={() => router.push("/checkout")}  
+              className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
               Proceed to Checkout
             </button>
+
           </div>
         </div>
       )}

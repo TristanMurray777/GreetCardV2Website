@@ -22,6 +22,9 @@ export default function ProductDetail() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [preloadAmount, setPreloadAmount] = useState(0);
+  const [customMessage, setCustomMessage] = useState("");
+const [imageFile, setImageFile] = useState<File | null>(null);
+const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -38,19 +41,26 @@ export default function ProductDetail() {
     fetchProduct();
   }, [id]);
   
-
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImageUrl(URL.createObjectURL(file)); // Temporary preview
+    }
+  };
   
-const handleAddToCart = async () => {
-  setMessage("");
-  if (!product) return;
-  try {
-    const token = localStorage.getItem("token");
-    await addToCart(product.id, quantity, preloadAmount, token); // ✅ Send pre-load amount
-    setMessage("✅ Item added to cart with pre-loaded amount! 🛒");
-  } catch (err) {
-    setMessage("❌ Failed to add item to cart.");
-  }
-};
+  const handleAddToCart = async () => {
+    setMessage("");
+    if (!product) return;
+    try {
+      const token = localStorage.getItem("token");
+      
+      await addToCart(product.id, quantity, preloadAmount, customMessage, imageUrl, token);
+      setMessage("✅ Item added to cart with personalization!");
+    } catch (err) {
+      setMessage("❌ Failed to add item to cart.");
+    }
+  };
   
 
   if (loading) return <p className="text-center text-gray-600">Loading product...</p>;
@@ -60,7 +70,7 @@ const handleAddToCart = async () => {
   return (
     
     
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6">
      
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
         
@@ -74,12 +84,21 @@ const handleAddToCart = async () => {
             </button>
           </Link>
         </div>
-
+         {/* Custom Message Input */}
+      <div className="mt-4">
+        <label className="block text-gray-600 mb-1">Custom Message</label>
+        <textarea
+          value={customMessage}
+          onChange={(e) => setCustomMessage(e.target.value)}
+          placeholder="Enter a message for the recipient..."
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        />
+      </div>
         <img src={product.image_url} alt={product.name} className="w-full h-64 object-cover rounded-md" />
         <h1 className="text-3xl font-bold mt-4">{product.name}</h1>
         <p className="text-gray-600 mt-2">{product.description}</p>
         <p className="text-xl font-semibold text-blue-600 mt-4">€{product.price}</p>
-
+        
         {/* Quantity Selector */}
         <div className="mt-4">
           <label className="block text-gray-600 mb-1">Quantity</label>
@@ -103,6 +122,13 @@ const handleAddToCart = async () => {
   />
 </div>
 
+      {/* Image Upload */}
+      <div className="mt-4">
+        <label className="block text-gray-600 mb-1">Upload an Image</label>
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
+        {imageUrl && <img src={imageUrl} alt="Preview" className="mt-2 w-40 h-40 object-cover rounded-md" />}
+      </div>
+      
         <button 
           onClick={handleAddToCart}
           className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">

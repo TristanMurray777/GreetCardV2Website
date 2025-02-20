@@ -93,9 +93,9 @@ export default function Navbar() {
       Create Personalised HyCard (Coming Soon)
     </p>
   </Link>
-  <Link href="#">
+  <Link href="/checkout">
     <p onClick={() => setIsOpen(false)} className="block py-2 px-4 rounded-md hover:bg-gray-700 cursor-pointer">
-      Checkout (Coming Soon)
+      Checkout 
     </p>
   </Link>
 </nav>
