@@ -41,6 +41,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+
 // Customer Signup
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
@@ -105,21 +106,25 @@ app.get("/cart", authenticateToken, (req, res) => {
 
 // Protected Route: Add Item to Cart
 app.post("/cart", (req, res) => {
-  const { cust_id, product_id, quantity } = req.body;
+  const { cust_id, product_id, quantity, preload_amount } = req.body;
   if (!cust_id || !product_id || !quantity) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   const query = `
-    INSERT INTO cart (cust_id, product_id, quantity)
-    VALUES (?, ?, ?)
-    ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)
+    INSERT INTO cart (cust_id, product_id, quantity, preload_amount)
+    VALUES (?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE 
+    quantity = quantity + VALUES(quantity), 
+    preload_amount = VALUES(preload_amount)
   `;
-  db.query(query, [cust_id, product_id, quantity], (err) => {
+
+  db.query(query, [cust_id, product_id, quantity, preload_amount || 0], (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Item added to cart" });
+    res.json({ message: "Item added to cart with pre-load amount" });
   });
 });
+
 
 // Get Customer Order History
 app.get("/orders", authenticateToken, (req, res) => {
@@ -137,6 +142,28 @@ app.get("/orders", authenticateToken, (req, res) => {
     res.json(results);
   });
 });
+
+app.post("/checkout", authenticateToken, (req, res) => {
+  const cust_id = req.user.userId;
+
+  // Get the total price, including pre-load amounts
+  const query = `
+    SELECT SUM((p.price * c.quantity) + c.preload_amount) AS total_price
+    FROM cart c
+    JOIN products p ON c.product_id = p.id
+    WHERE c.cust_id = ?;
+  `;
+
+  db.query(query, [cust_id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    const totalPrice = results[0].total_price || 0;
+    
+    // Here, you would process the payment (for now, we just return the total)
+    res.json({ message: "Checkout successful", total: totalPrice });
+  });
+});
+
 
 
 app.get("/products", (req, res) => {

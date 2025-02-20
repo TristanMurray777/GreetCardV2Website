@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -19,4 +21,13 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ✅ Ensure bg-custom is not overridden */
+body.bg-custom {
+  background-image: url("/HyCardBackground.jpg"); /* ✅ Uses image from public/ */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: transparent !important; /* ✅ Prevents solid color override */
 }

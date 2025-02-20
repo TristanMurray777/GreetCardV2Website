@@ -13,6 +13,11 @@ export const login = async (username, password) => {
   return axios.post(`${API_BASE_URL}/login`, { username, password });
 };
 
+export const logout = () => {
+  localStorage.removeItem("token"); // ✅ Remove JWT token
+};
+
+
 // Fetch Products
 export const getProducts = async () => {
   return axios.get(`${API_BASE_URL}/products`);
@@ -29,7 +34,7 @@ export const getCart = async (token) => {
   });
 };
 
-export const addToCart = async (product_id, quantity, token) => {
+export const addToCart = async (product_id, quantity, preload_amount, token) => {
     if (!token) throw new Error("User not authenticated");
   
     try {
