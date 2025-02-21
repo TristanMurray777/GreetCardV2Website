@@ -1,3 +1,5 @@
+//References: 1: https://www.youtube.com/watch?v=6rE3SO28Csg&ab_channel=Roman
+//2: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
 import { useState } from "react";
 import { checkout } from "../utils/api";
 import { useRouter } from "next/router";

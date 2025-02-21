@@ -1,3 +1,5 @@
+//References: 1: https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/
+//2: https://www.youtube.com/watch?v=8s4DK5PkRNQ&ab_channel=BrettWestwood-SoftwareEngineer
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";

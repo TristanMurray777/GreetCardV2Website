@@ -1,3 +1,11 @@
+//References: *NOTE* - A lot of this page was developed in conjunction with ChatGPT. Model - o4. Mainly involves SQL queries, is referenced below
+//1. https://devdotcode.com/complete-jwt-authentication-and-authorization-system-for-mysql-node-js-api/
+//2. https://www.youtube.com/watch?v=V5xoeyOtgIA&t=984s&ab_channel=Webslesson
+//3. https://blog.logrocket.com/build-rest-api-node-express-mysql/
+//4. https://www.youtube.com/watch?v=jtHS3OC64V4&ab_channel=ARCTutorials
+//5. https://www.youtube.com/watch?v=88hYFUpNJ8A&ab_channel=ARCTutorials
+
+
 //Imports dependencies + sets up environment
 require("dotenv").config();
 const express = require("express");
@@ -123,6 +131,7 @@ app.get("/customer", authenticateToken, (req, res) => {
   });
 });
 
+//*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: "Create a route that allows a user to view their cart items. The route should return the product name, price, quantity, and image URL for each item in the cart. There are two different tables which store the desired data; cart and products  The route should require user authentication using a JWT token."
 //Gets cart by joining cart + products tables together
 app.get("/cart", authenticateToken, (req, res) => {
   const query = `
@@ -137,6 +146,8 @@ app.get("/cart", authenticateToken, (req, res) => {
   });
 });
 
+
+//*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: "Create a route that allows a user to add an item to their cart. The route should require user authentication using a JWT token. The route should accept the following fields: product_id, quantity, preload_amount, custom_message, and image_url. If the item already exists in the cart, the route should update the quantity of the item. If the item does not exist in the cart, the route should add the item to the cart."
 //Adds item to the users cart. If it already exists, it updates the quantity
 app.post("/cart", authenticateToken, (req, res) => {
   const { product_id, quantity, preload_amount, custom_message, image_url } = req.body;
@@ -164,6 +175,7 @@ app.post("/cart", authenticateToken, (req, res) => {
 });
 
 
+//*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: "Create a route that allows a user to checkout. The route should calculate the total price of the items in the cart, create an order, move the items from the cart to the order_items table, clear the cart, and update the order status to 'Completed'. The route should require user authentication using a JWT token."
 //Calculates total price of items in cart, creates an order, moves items from cart to order_items, clears cart, and updates order status
 app.post("/checkout", authenticateToken, (req, res) => {
   const cust_id = req.customer.cust_id;
@@ -185,6 +197,7 @@ app.post("/checkout", authenticateToken, (req, res) => {
       return res.status(400).json({ error: "Cart is empty. Cannot checkout." });
     }
 
+    //*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: Continuation of checkout prompt
     //Creates order
     const insertOrderQuery = `INSERT INTO orders (cust_id, total_price, status) VALUES (?, ?, 'Pending')`;
     db.query(insertOrderQuery, [cust_id, totalPrice], (err, orderResult) => {

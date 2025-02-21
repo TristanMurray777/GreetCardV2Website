@@ -1,3 +1,4 @@
+//References: 1: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getProducts, addToCart } from "../utils/api"; 
@@ -40,6 +41,7 @@ export default function Home() {
     setUserType(storedUserType);
   }, []);
 
+  //*Note* The bulk order feature was developed in conjunction with ChatGPT. Model - o4. Prompt: Help me to add a bulk order feature for a retailer to my react.js project.
   //Handles bulk quantity input change. Stores the quantity in bulkQuantities 
   const handleBulkQuantityChange = (productId: number, quantity: number) => {
     setBulkQuantities((prev) => ({ ...prev, [productId]: quantity }));

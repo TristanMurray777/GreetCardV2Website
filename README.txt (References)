@@ -1,0 +1,47 @@
+Website background image: https://www.freepik.com/free-vector/navy-blue-geometrical-patterned-mobile-wallpaper-vector_28352582.htm#fromView=search&page=1&position=20&uuid=de0bcf1e-cd6b-43b3-af9e-13bf6db7d602&query=App+Background
+
+Images used for the HyCards:
+1. 'https://ie.pinterest.com/pin/155303888102803330/'
+2. 'https://ie.pinterest.com/pin/815573814593333692/'
+3. 'https://ie.pinterest.com/pin/407857310025195896/'
+4. 'https://ie.pinterest.com/pin/155303888138887894/'
+5. 'https://ie.pinterest.com/pin/477803841735215821/'
+6. 'https://ie.pinterest.com/pin/896286763343576247/'
+7. 'https://ie.pinterest.com/pin/1093671090744872355/'
+8. 'https://ie.pinterest.com/pin/597571444338169364/'
+9. 'https://ie.pinterest.com/pin/485896247325322555/'
+
+Tutorials followed for the development of this webpage: 
+Building RESTful API w/ node, express and mysql
+1. https://blog.logrocket.com/build-rest-api-node-express-mysql/
+2. https://www.youtube.com/watch?v=jtHS3OC64V4&ab_channel=ARCTutorials
+3. https://www.youtube.com/watch?v=88hYFUpNJ8A&ab_channel=ARCTutorials
+
+Frontend development
+4. https://snipcart.com/blog/next-js-ecommerce-tutorial-example
+5. https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+
+Setting up user authentication - used similar sources to my application both projects using JWTs + Bcrypt
+6. https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
+7. https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
+
+Navbar
+8. https://www.youtube.com/watch?v=8s4DK5PkRNQ&ab_channel=BrettWestwood-SoftwareEngineer
+
+Fetching + Displaying products
+9. https://www.youtube.com/watch?v=F7fNEkSHvEw&ab_channel=JBWEBDEVELOPER
+
+Image uploads
+10. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+
+Layout
+11. https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts
+12. https://www.youtube.com/watch?v=BirEFPNAry4&t=36s&ab_channel=EasyLearning
+
+Cart Functionality
+13. https://blog.logrocket.com/building-a-next-js-shopping-cart-app
+14. https://www.youtube.com/watch?v=6rE3SO28Csg&ab_channel=Roman
+15. https://www.youtube.com/watch?v=V5xoeyOtgIA&t=984s&ab_channel=Webslesson
+
+Token Management
+16. https://devdotcode.com/complete-jwt-authentication-and-authorization-system-for-mysql-node-js-api/

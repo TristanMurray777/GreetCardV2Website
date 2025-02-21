@@ -1,3 +1,6 @@
+//References: 1. https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
+//2. https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
+//3. https://www.youtube.com/watch?v=1MtHkHpUbS4&t=1033s&ab_channel=TechCheck
 import axios from "axios";
 
 //Sets API base url so that it can be changes easily

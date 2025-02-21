@@ -1,3 +1,8 @@
+//References: 1: https://blog.logrocket.com/building-a-next-js-shopping-cart-app/
+//2: https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
+//3: https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
+//4: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+
 import { useEffect, useState } from "react";
 import { getCart } from "../utils/api";
 import "../styles/globals.css";
@@ -40,7 +45,7 @@ export default function Cart() {
     fetchCart();
   }, []);
 
-  //Calculates total cost of all items in cart. If card is not preloaded, preload_amount defaults to 0
+  //Calculates total cost of all items in cart. If card is not preloaded, preload_amount defaults to 0. *Note* This function was developed in conjunction with ChatGPT. Model - o4. Prompt: Help me to calculate the total cost of all items in a react.js shopping cart. 
   const calculateTotal = () => {
     return cart.reduce((sum, item) => 
       sum + (Number(item.price) * item.quantity) + Number(item.preload_amount || 0), 0

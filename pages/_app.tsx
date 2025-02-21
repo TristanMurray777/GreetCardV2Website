@@ -1,3 +1,4 @@
+//References: 1: https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts?
 import type { AppProps } from "next/app";
 import RootLayout from "../components/layout"; 
 import "../styles/globals.css";

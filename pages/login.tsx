@@ -1,3 +1,7 @@
+//References: 1. https://www.youtube.com/watch?v=WNZbARN7lMM&ab_channel=AaronSaunders
+//2. https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
+//3. https://www.youtube.com/watch?v=j4Ms4CSDR60&ab_channel=CodingPartner
+
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { login } from "../utils/api";

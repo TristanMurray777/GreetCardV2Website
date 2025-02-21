@@ -1,3 +1,6 @@
+//References: 1: https://www.youtube.com/watch?v=F7fNEkSHvEw&ab_channel=JBWEBDEVELOPER
+//2: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -19,7 +22,7 @@ export default function ProductDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<Product | null>(null);
-  const [quantity, setQuantity] = useState(1); // New state for quantity
+  const [quantity, setQuantity] = useState(1); //New state for quantity
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");

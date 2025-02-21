@@ -1,4 +1,4 @@
-
+//References: 1: https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import Navbar from "./Navbar";
