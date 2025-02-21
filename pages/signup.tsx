@@ -3,12 +3,14 @@ import { useRouter } from "next/router";
 import { signup } from "../utils/api";
 
 export default function Signup() {
+  //Declares variables. Stores account type, username, password.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("customer");
   const [error, setError] = useState("");
   const router = useRouter();
 
+  //Handles signup. Calls signup API. If successful, redirects user to login page. If not, displays error
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -20,6 +22,7 @@ export default function Signup() {
     }
   };
 
+  //Displays UI for signup form. Captures username, password and account type. Uses the signup button to trigger handleSignup
   return (
     <div className="min-h-screen flex items-center justify-center ">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">

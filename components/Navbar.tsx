@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { logout } from "../utils/api"; // ✅ Import logout function
+import { logout } from "../utils/api"; 
 
+
+//Navbar that allows users to navigate. 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // ✅ Check if user is logged in (JWT exists in localStorage)
+    //Checks if user is logged in 
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
@@ -18,13 +20,16 @@ export default function Navbar() {
     logout();
     setIsAuthenticated(false);
     alert("You have been logged out.");
-    setIsOpen(false); // ✅ Close sidebar on logout
-    router.push("/login"); // ✅ Redirect to login page after logout
+
+    //Closes sidebar when a user logs out and redirect them to the login pg.
+    setIsOpen(false); 
+
+    router.push("/login"); 
   };
 
+  //Navbars design. 
   return (
     <>
-      {/* Hamburger Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-4 left-4 z-[100] bg-gray-800 text-white p-3 rounded-md focus:outline-none"
@@ -32,13 +37,13 @@ export default function Navbar() {
         ☰
       </button>
 
-      {/* Sidebar */}
+     
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out shadow-lg p-6`}
       >
-        {/* Close Button */}
+     
         <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 text-gray-300 text-xl"
@@ -51,10 +56,10 @@ export default function Navbar() {
 
 
 
-       {/* Menu Links */}
+       
 <nav className="mt-20 space-y-6">
 
-
+  {/* Checks if user is logged in or not. If they are, shows Logout. If they're not, shows sign up. */}
   {!isAuthenticated ? (
     <>
       <Link href="/signup">
@@ -77,7 +82,7 @@ export default function Navbar() {
     </p>
   )}
 
-
+  {/* General navigation*/}
   <Link href="/home">
   <p onClick={() => setIsOpen(false)} className="block py-2 px-4 rounded-md hover:bg-gray-700 cursor-pointer">
    Home 
@@ -86,11 +91,6 @@ export default function Navbar() {
   <Link href="/cart">
     <p onClick={() => setIsOpen(false)} className="block py-2 px-4 rounded-md hover:bg-gray-700 cursor-pointer">
       View Cart
-    </p>
-  </Link>
-  <Link href="#">
-    <p onClick={() => setIsOpen(false)} className="block py-2 px-4 rounded-md hover:bg-gray-700 cursor-pointer">
-      Create Personalised HyCard (Coming Soon)
     </p>
   </Link>
   <Link href="/checkout">

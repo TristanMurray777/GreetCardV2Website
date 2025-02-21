@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getProductById, addToCart } from "../../utils/api";
 import "../../styles/globals.css";
 
+//Defines the product interface
 interface Product {
   id: number;
   name: string;
@@ -14,6 +15,7 @@ interface Product {
 
 
 export default function ProductDetail() {
+  //Declares varaibles
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<Product | null>(null);
@@ -26,12 +28,14 @@ export default function ProductDetail() {
 const [imageFile, setImageFile] = useState<File | null>(null);
 const [imageUrl, setImageUrl] = useState("");
 
+
+  //Fetches product by id
   useEffect(() => {
     if (!id) return;
     async function fetchProduct() {
       try {
         const response = await getProductById(id as string);
-        setProduct(response.data); // ✅ Make sure this matches Product type
+        setProduct(response.data); 
       } catch (err) {
         setError("Failed to load product.");
       } finally {
@@ -41,14 +45,17 @@ const [imageUrl, setImageUrl] = useState("");
     fetchProduct();
   }, [id]);
   
+  //Allows users to upload their own image + view it
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
-      setImageUrl(URL.createObjectURL(file)); // Temporary preview
+      setImageUrl(URL.createObjectURL(file)); 
     }
   };
   
+
+  //Adds all the product details to the cart. DB is setup so that if a value is blank, it gets stored as null. 
   const handleAddToCart = async () => {
     setMessage("");
     if (!product) return;
@@ -62,11 +69,12 @@ const [imageUrl, setImageUrl] = useState("");
     }
   };
   
-
+  //Displays message while loading product/error message I used for troubleshooting
   if (loading) return <p className="text-center text-gray-600">Loading product...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!product) return <p className="text-center text-gray-600">Product not found.</p>;
 
+  //Renders UI
   return (
     
     
@@ -75,7 +83,7 @@ const [imageUrl, setImageUrl] = useState("");
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
         
 
-         {/* Header with View Cart Button */}
+         {/* Displays product name + View cart button for nav */}
          <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <Link href="/cart">
@@ -84,7 +92,9 @@ const [imageUrl, setImageUrl] = useState("");
             </button>
           </Link>
         </div>
-         {/* Custom Message Input */}
+
+
+         {/* Allows users to input a custom message */}
       <div className="mt-4">
         <label className="block text-gray-600 mb-1">Custom Message</label>
         <textarea
@@ -99,7 +109,7 @@ const [imageUrl, setImageUrl] = useState("");
         <p className="text-gray-600 mt-2">{product.description}</p>
         <p className="text-xl font-semibold text-blue-600 mt-4">€{product.price}</p>
         
-        {/* Quantity Selector */}
+        {/* HyCard Quantity Selector */}
         <div className="mt-4">
           <label className="block text-gray-600 mb-1">Quantity</label>
           <input
@@ -111,6 +121,7 @@ const [imageUrl, setImageUrl] = useState("");
           />
         </div>
         
+        {/* HyCard Pre-load Amount */}
         <div className="mt-4">
   <label className="block text-gray-600 mb-1">Pre-load Amount (€)</label>
   <input
@@ -122,13 +133,14 @@ const [imageUrl, setImageUrl] = useState("");
   />
 </div>
 
-      {/* Image Upload */}
+      {/* Allows users to add an image to their HyCard */}
       <div className="mt-4">
         <label className="block text-gray-600 mb-1">Upload an Image</label>
         <input type="file" accept="image/*" onChange={handleImageUpload} />
         {imageUrl && <img src={imageUrl} alt="Preview" className="mt-2 w-40 h-40 object-cover rounded-md" />}
       </div>
-      
+
+
         <button 
           onClick={handleAddToCart}
           className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">

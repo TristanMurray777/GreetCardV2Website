@@ -1,3 +1,4 @@
+//Imports dependencies + sets up environment
 require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2");
@@ -5,15 +6,17 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+
+//Sets up express app on port 2000
 const app = express();
 const PORT = process.env.PORT || 2000;
 const SECRET_KEY = process.env.JWT_SECRET || "e540bca8971e2f90ff4b8c7289d67c7d32a8a98f362f2e09bba2dcf90b278bde82890a8b907af3b8eae89d69c2f7dcf7";
 
-// Middleware
+//Middleware
 app.use(cors());
 app.use(express.json());
 
-// MySQL Connection
+//Connects to database
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -21,6 +24,7 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
+//Logs errors for troubleshooting
 db.connect((err) => {
   if (err) {
     console.error("Database connection failed: " + err.stack);
@@ -29,19 +33,19 @@ db.connect((err) => {
   console.log("Connected to MySQL Database");
 });
 
-// Middleware to verify JWT token
+//Middleware that verifies the JWT token. Extracts JWT toke, verifies it, and attaches user data to the request
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ error: "Access denied" });
+  if (!token || !token.startsWith("Bearer ")) return res.status(401).json({ error: "Access denied" });
 
-  jwt.verify(token.replace("Bearer ", ""), SECRET_KEY, (err, customer) => {
+  jwt.verify(token.split(" ")[1], SECRET_KEY, (err, customer) => {
     if (err) return res.status(403).json({ error: "Invalid token" });
     req.customer = customer;
     next();
   });
 };
 
-// Customer Signup
+//Ensures user enters a username and password, hashes their password using bcrypt, stores username, password + user type in DB
 app.post("/signup", async (req, res) => {
   const { username, password, user_type } = req.body;
   
@@ -49,7 +53,7 @@ app.post("/signup", async (req, res) => {
     return res.status(400).json({ error: "Missing fields" });
   }
 
-  // Ensure user_type is either 'customer' or 'retailer'
+
   const validUserTypes = ["customer", "retailer"];
   const accountType = validUserTypes.includes(user_type) ? user_type : "customer";
 
@@ -64,7 +68,7 @@ app.post("/signup", async (req, res) => {
 });
 
 
-// Customer Login
+//Customer Login. Retrieves user data from DB, compares hashed password with entered password, and generates a JWT token. 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -80,21 +84,35 @@ app.post("/login", (req, res) => {
     }
 
     const customer = results[0];
-    const match = await bcrypt.compare(password, customer.password);
-    if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign(
-      { cust_id: customer.cust_id, username: customer.username, user_type: customer.user_type },
-      SECRET_KEY,
-      { expiresIn: "1h" }
-    );
+    //Logs errors for troubleshooting
+    console.log("Stored Password (Hashed):", customer.password);
+    console.log("Entered Password (Plain):", password);
 
-    res.json({ message: "Login successful", token, user_type: customer.user_type });
+    try {
+      const match = await bcrypt.compare(password, customer.password); 
+      if (!match) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      //Generates JWT token
+      const token = jwt.sign(
+        { cust_id: customer.cust_id, username: customer.username, user_type: customer.user_type },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+
+      //Returns JWT + user type
+      res.json({ message: "Login successful", token, user_type: customer.user_type });
+    } catch (error) {
+      res.status(500).json({ error: "Error verifying password" });
+    }
   });
 });
 
 
-// Protected Route: Get Customer Details
+
+//Gets customer details using cust_id
 app.get("/customer", authenticateToken, (req, res) => {
   const query = "SELECT cust_id, username FROM customer WHERE cust_id = ?";
   db.query(query, [req.customer.cust_id], (err, results) => {
@@ -105,7 +123,7 @@ app.get("/customer", authenticateToken, (req, res) => {
   });
 });
 
-// Protected Route: Get Cart Items
+//Gets cart by joining cart + products tables together
 app.get("/cart", authenticateToken, (req, res) => {
   const query = `
     SELECT c.id, p.name, p.price, c.quantity, p.image_url, c.preload_amount
@@ -119,7 +137,7 @@ app.get("/cart", authenticateToken, (req, res) => {
   });
 });
 
-// Protected Route: Add Item to Cart
+//Adds item to the users cart. If it already exists, it updates the quantity
 app.post("/cart", authenticateToken, (req, res) => {
   const { product_id, quantity, preload_amount, custom_message, image_url } = req.body;
   const cust_id = req.customer.cust_id;
@@ -138,6 +156,7 @@ app.post("/cart", authenticateToken, (req, res) => {
     image_url = VALUES(image_url);
   `;
 
+  //Indicates success to user
   db.query(query, [cust_id, product_id, quantity, preload_amount || 0, custom_message || null, image_url || null], (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: "Item added to cart with personalization!" });
@@ -145,27 +164,11 @@ app.post("/cart", authenticateToken, (req, res) => {
 });
 
 
-// Get Customer Order History
-app.get("/orders", authenticateToken, (req, res) => {
-  const query = `
-    SELECT o.id AS order_id, o.status, o.created_at, 
-           p.name AS product_name, oi.quantity, p.price 
-    FROM orders o 
-    JOIN order_items oi ON o.id = oi.order_id 
-    JOIN products p ON oi.product_id = p.id 
-    WHERE o.cust_id = ? 
-    ORDER BY o.created_at DESC
-  `;
-  
-  db.query(query, [req.customer.cust_id], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
-});
-
+//Calculates total price of items in cart, creates an order, moves items from cart to order_items, clears cart, and updates order status
 app.post("/checkout", authenticateToken, (req, res) => {
   const cust_id = req.customer.cust_id;
 
+  //Calculates total price of items in cart
   const totalQuery = `
     SELECT SUM((p.price * c.quantity) + c.preload_amount) AS total_price
     FROM cart c
@@ -173,6 +176,7 @@ app.post("/checkout", authenticateToken, (req, res) => {
     WHERE c.cust_id = ?;
   `;
 
+  //Makes sure cart is not empty
   db.query(totalQuery, [cust_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
@@ -181,25 +185,32 @@ app.post("/checkout", authenticateToken, (req, res) => {
       return res.status(400).json({ error: "Cart is empty. Cannot checkout." });
     }
 
+    //Creates order
     const insertOrderQuery = `INSERT INTO orders (cust_id, total_price, status) VALUES (?, ?, 'Pending')`;
     db.query(insertOrderQuery, [cust_id, totalPrice], (err, orderResult) => {
       if (err) return res.status(500).json({ error: err.message });
 
+      
       const order_id = orderResult.insertId;
 
+      //Moves items from cart to order_items
       const moveItemsQuery = `
         INSERT INTO order_items (order_id, product_id, quantity, preload_amount, custom_message, image_url)
         SELECT ?, c.product_id, c.quantity, c.preload_amount, c.custom_message, c.image_url 
         FROM cart c WHERE c.cust_id = ?;
       `;
 
+    
       db.query(moveItemsQuery, [order_id, cust_id], (err) => {
         if (err) return res.status(500).json({ error: err.message });
 
+
+        //Clears cart
         const clearCartQuery = `DELETE FROM cart WHERE cust_id = ?;`;
         db.query(clearCartQuery, [cust_id], (err) => {
           if (err) return res.status(500).json({ error: err.message });
 
+          //Updates order status from pending to completed 
           const updateOrderStatusQuery = `UPDATE orders SET status = 'Completed' WHERE id = ?;`;
           db.query(updateOrderStatusQuery, [order_id], (err) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -212,7 +223,7 @@ app.post("/checkout", authenticateToken, (req, res) => {
   });
 });
 
-
+//Fetches all products for home page
 app.get("/products", (req, res) => {
   const query = "SELECT * FROM products";
   db.query(query, (err, results) => {
@@ -221,6 +232,7 @@ app.get("/products", (req, res) => {
   });
 });
 
+//Fetches product by ID for individual product page
 app.get("/products/:id", (req, res) => {
   const productId = req.params.id;
   const query = "SELECT * FROM products WHERE id = ?";
@@ -232,12 +244,12 @@ app.get("/products/:id", (req, res) => {
   });
 });
 
-// Default Route
+//Default Route
 app.get("/", (req, res) => {
   res.send("Express server is running");
 });
 
-// Start Server
+//Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

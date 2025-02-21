@@ -8,6 +8,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  //Handles login
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -15,21 +16,22 @@ export default function Login() {
     try {
       const response = await login(username, password);
       
-      // Store token & user type in localStorage
+      //Stores token & user type in localStorage
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user_type", response.data.user_type); // ✅ Store user type
+      localStorage.setItem("user_type", response.data.user_type); 
 
-      // Redirect user to the appropriate dashboard based on account type
+      //Redirects user to home page based on user type
       if (response.data.user_type === "retailer") {
-        router.push("/home"); // Redirect retailers
+        router.push("/home"); 
       } else {
-        router.push("/home"); // Redirect customers
+        router.push("/home"); 
       }
     } catch (err: any) {
       setError(err.response?.data?.error || "Login failed");
     }
   };
 
+  //Displays UI for login form. Captures username + password and uses the login button to trigger handleLogin
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

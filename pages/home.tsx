@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getProducts, addToCart } from "../utils/api"; // ✅ Import addToCart API
+import { getProducts, addToCart } from "../utils/api"; 
 import "../styles/globals.css";
 
+//Defines the product interface
 interface Product {
   id: number;
   name: string;
@@ -12,6 +13,7 @@ interface Product {
 }
 
 export default function Home() {
+  //Declares variables
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,6 +21,7 @@ export default function Home() {
   const [bulkQuantities, setBulkQuantities] = useState<{ [key: number]: number }>({});
   const [message, setMessage] = useState("");
 
+  //Fetches products from the backend. If successful, sets products to the response data. If not, sets error message
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -32,17 +35,17 @@ export default function Home() {
     }
     fetchProducts();
 
-    // Get user type from localStorage
+    //Gets user type from localStorage
     const storedUserType = localStorage.getItem("user_type");
     setUserType(storedUserType);
   }, []);
 
-  // Handle bulk quantity input change
+  //Handles bulk quantity input change. Stores the quantity in bulkQuantities 
   const handleBulkQuantityChange = (productId: number, quantity: number) => {
     setBulkQuantities((prev) => ({ ...prev, [productId]: quantity }));
   };
 
-  // Handle bulk order button click
+  //Handles bulk order. Checks if user is logged in. Defaults the quantity to 10. Calls addToCart API. If successful, displays success message
   const handleBulkOrder = async (productId: number) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -50,10 +53,10 @@ export default function Home() {
       return;
     }
   
-    const quantity = bulkQuantities[productId] || 10; // Default bulk quantity to 10
+    const quantity = bulkQuantities[productId] || 10; 
   
     try {
-      await addToCart(productId, quantity, 0, token); // ✅ Add bulk order to cart
+      await addToCart(productId, quantity, 0, "", "", token); 
       setMessage(`✅ Bulk order of ${quantity} items added to cart successfully!`);
     } catch (err: any) {
       console.error("🚨 Bulk Order API Error:", err.response?.data || err.message);
@@ -61,8 +64,10 @@ export default function Home() {
     }
   };
   
-
+  
+  //Displays UI for homepage
   return (
+    //Header + View Cart button
     <div className="min-h-screen p-6">
       <h1 className="text-3xl text-white font-bold text-center mb-8">Welcome to HyStore!</h1>
       <h2 className="text-2xl text-white font-semibold text-center mb-4">
@@ -76,12 +81,15 @@ export default function Home() {
         </Link>
       </div>
 
-      {message && <p className="text-center text-green-600">{message}</p>} {/* ✅ Success/Error message */}
+      {/* Displays success/error message */}  
+      {message && <p className="text-center text-green-600">{message}</p>} 
 
       {loading ? (
         <p className="text-center text-gray-600">Loading products...</p>
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
+
+        //Displays product images, names + prices. 
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => (
@@ -95,7 +103,7 @@ export default function Home() {
                 </button>
               </Link>
 
-              {/* Retailer Bulk Order Option */}
+              {/* Retailer Bulk Order Option. Displays only if the user is a retailer. */}
               {userType === "retailer" && (
                 <div className="mt-3">
                   <p className="text-sm text-gray-500">Retailer Bulk Order</p>
