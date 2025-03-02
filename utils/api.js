@@ -4,7 +4,7 @@
 import axios from "axios";
 
 //Sets API base url so that it can be changes easily
-const API_BASE_URL = "http://192.168.1.16:2000";
+const API_BASE_URL = "http://192.168.1.10:2000";
 
 //Sends post request to /signup with user details
 export const signup = async (username, password, user_type) => {
