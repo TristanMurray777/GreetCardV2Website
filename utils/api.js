@@ -4,7 +4,7 @@
 import axios from "axios";
 
 //Sets API base url so that it can be changes easily
-const API_BASE_URL = "http://192.168.1.10:2000";
+const API_BASE_URL = "http://10.241.180.57:2000";
 
 //Sends post request to /signup with user details
 export const signup = async (username, password, user_type) => {
@@ -62,6 +62,26 @@ export const checkout = async (token) => {
     {},
     { headers: { Authorization: `Bearer ${token}` } }
   );
+};
+
+//Fetches total user count report
+export const getUserCountReport = async () => {
+  return axios.get(`${API_BASE_URL}/reports/user-count`);
+};
+
+//Fetches sales summary report
+export const getSalesSummaryReport = async () => {
+  return axios.get(`${API_BASE_URL}/reports/sales-summary`);
+};
+
+//Publishes the generated report
+export const publishReport = async (reportData) => {
+  return axios.post(`${API_BASE_URL}/reports/publish`, { reportData });
+};
+
+//Fetches the published report for advertisers
+export const getPublishedReport = async () => {
+  return axios.get(`${API_BASE_URL}/reports/published`);
 };
 
 

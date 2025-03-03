@@ -79,6 +79,17 @@ app.post("/signup", async (req, res) => {
 //Customer Login. Retrieves user data from DB, compares hashed password with entered password, and generates a JWT token. 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
+
+  // 🔹 Hardcoded login for Admin and Advertiser (Bypasses DB)
+  if (username === "Admin" && password === "1234") {
+    return res.json({ message: "Login successful", user_type: "admin" });
+  }
+
+  if (username === "Advertiser" && password === "1234") {
+    return res.json({ message: "Login successful", user_type: "advertiser" });
+  }
+
+  // 🔹 Database authentication for Customers & Retailers
   if (!username || !password) {
     return res.status(400).json({ error: "Missing fields" });
   }
@@ -93,7 +104,7 @@ app.post("/login", (req, res) => {
 
     const customer = results[0];
 
-    //Logs errors for troubleshooting
+    // Logs errors for troubleshooting
     console.log("Stored Password (Hashed):", customer.password);
     console.log("Entered Password (Plain):", password);
 
@@ -103,20 +114,21 @@ app.post("/login", (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      //Generates JWT token
+      // Generates JWT token for customers and retailers
       const token = jwt.sign(
         { cust_id: customer.cust_id, username: customer.username, user_type: customer.user_type },
         SECRET_KEY,
         { expiresIn: "1h" }
       );
 
-      //Returns JWT + user type
+      // Returns JWT + user type
       res.json({ message: "Login successful", token, user_type: customer.user_type });
     } catch (error) {
       res.status(500).json({ error: "Error verifying password" });
     }
   });
 });
+
 
 
 
@@ -235,6 +247,61 @@ app.post("/checkout", authenticateToken, (req, res) => {
     });
   });
 });
+
+
+//Reporting Feature setup
+//Fetches total number of users grouped by type
+app.get("/reports/user-count", (req, res) => {
+  const query = "SELECT user_type, COUNT(*) as count FROM customer GROUP BY user_type";
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+//Fetches total sales and most purchased HyCards
+app.get("/reports/sales-summary", (req, res) => {
+  const query = `
+    SELECT p.name, COUNT(*) AS total_purchases 
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    GROUP BY oi.product_id
+    ORDER BY total_purchases DESC
+    LIMIT 5;
+  `;
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    //Fetches total sales amount
+    const totalSalesQuery = `SELECT SUM(total_price) AS total_sales FROM orders WHERE status = 'Completed'`;
+    db.query(totalSalesQuery, (err, salesResults) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      res.json({
+        total_sales: salesResults[0]?.total_sales || 0,
+        top_products: results
+      });
+    });
+  });
+});
+
+//Stores latest published report in memory
+let publishedReport = null;
+
+//Admin Publishes Report
+app.post("/reports/publish", (req, res) => {
+  const { reportData } = req.body;
+  publishedReport = reportData;
+  res.json({ message: "Report published successfully!" });
+});
+
+//Advertiser Fetches Published Report
+app.get("/reports/published", (req, res) => {
+  if (!publishedReport) return res.status(404).json({ error: "No reports published yet." });
+  res.json({ report: publishedReport });
+});
+
+
 
 //Fetches all products for home page
 app.get("/products", (req, res) => {
