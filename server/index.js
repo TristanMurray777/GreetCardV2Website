@@ -4,7 +4,7 @@
 //3. https://blog.logrocket.com/build-rest-api-node-express-mysql/
 //4. https://www.youtube.com/watch?v=jtHS3OC64V4&ab_channel=ARCTutorials
 //5. https://www.youtube.com/watch?v=88hYFUpNJ8A&ab_channel=ARCTutorials
-
+//6. OpenAI Integration : https://platform.openai.com/docs/overview, https://www.freecodecamp.org/news/generate-images-using-react-and-dall-e-api-react-and-openai-api-tutorial/, https://www.youtube.com/watch?v=oacBV4tnuYQ&ab_channel=Cybernatico
 
 //Imports dependencies + sets up environment
 require("dotenv").config();
@@ -191,6 +191,7 @@ app.post("/cart", authenticateToken, (req, res) => {
 //Calculates total price of items in cart, creates an order, moves items from cart to order_items, clears cart, and updates order status
 app.post("/checkout", authenticateToken, (req, res) => {
   const cust_id = req.customer.cust_id;
+  const userType = req.customer.user_type;
 
   //Calculates total price of items in cart
   const totalQuery = `
@@ -204,7 +205,7 @@ app.post("/checkout", authenticateToken, (req, res) => {
   db.query(totalQuery, [cust_id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
-    const totalPrice = results[0].total_price || 0;
+    let totalPrice = results[0].total_price || 0;
     if (totalPrice === 0) {
       return res.status(400).json({ error: "Cart is empty. Cannot checkout." });
     }
@@ -263,31 +264,34 @@ app.get("/reports/user-count", (req, res) => {
   });
 });
 
-//Fetches total sales and most purchased HyCards
+
+// Fetches total sales and most purchased HyCards (Fix for duplicate product names)
 app.get("/reports/sales-summary", (req, res) => {
   const query = `
-    SELECT p.name, COUNT(*) AS total_purchases 
+    SELECT p.name, SUM(oi.quantity) AS total_purchases 
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
-    GROUP BY oi.product_id
+    GROUP BY p.name  -- Ensures product names are unique
     ORDER BY total_purchases DESC
-    LIMIT 5;
+    LIMIT 3;
   `;
+
   db.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    
-    //Fetches total sales amount
+
+    // Fetch total sales
     const totalSalesQuery = `SELECT SUM(total_price) AS total_sales FROM orders WHERE status = 'Completed'`;
     db.query(totalSalesQuery, (err, salesResults) => {
       if (err) return res.status(500).json({ error: err.message });
 
       res.json({
         total_sales: salesResults[0]?.total_sales || 0,
-        top_products: results
+        top_products: results,
       });
     });
   });
 });
+
 
 //Stores latest published report in memory
 let publishedReport = null;

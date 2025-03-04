@@ -1,3 +1,7 @@
+//References: 1: Charts: https://recharts.org/en-US/api/Pie
+//2: Charts: https://www.geeksforgeeks.org/create-a-pie-chart-using-recharts-in-reactjs/
+//3: Charts: https://posthog.com/tutorials/recharts
+
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { getPublishedReport } from "../utils/api";
@@ -35,20 +39,21 @@ export default function AdvertiserDashboard() {
   }, []);
 
   // Modern color palette that works well with purple background
-  const colors = ["#F9C80E", "#F86624", "#EA3546", "#662E9B", "#43BCCD"];
+  const colors = ["#4A90E2", "#50E3C2", "#F5A623", "#D0021B", "#9013FE"];
+
   
   // Card shadow for depth
   const cardStyle = "bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 transition-all hover:shadow-2xl";
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-800 p-6 text-white">
+    <div className="min-h-screen p-6 text-white">
       {/* Header section with improved styling */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-center tracking-tight">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-violet-300">
             Advertiser Dashboard
           </span>
-          <span className="ml-2">✨</span>
+        
         </h1>
         
         {loading && (

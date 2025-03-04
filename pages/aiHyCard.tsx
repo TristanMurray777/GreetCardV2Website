@@ -1,3 +1,6 @@
+//References: 1: AI Implementation - https://www.youtube.com/watch?v=oacBV4tnuYQ&ab_channel=Cybernatico
+//2: AI Implementation - https://www.freecodecamp.org/news/generate-images-using-react-and-dall-e-api-react-and-openai-api-tutorial/
+//3: 
 import { useState } from "react";
 import { dalle } from "../utils/api";
 
@@ -26,15 +29,15 @@ export default function AIHyCard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-800 text-white p-6 flex flex-col items-center justify-center">
+    <div className="min-h-screen text-white p-6 flex flex-col items-center justify-center">
       <div className="w-full max-w-3xl bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-8">
           <h1 className="text-4xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-violet-300">
-            <span className="mr-2">✨</span> Create Your AI HyCard
+            <span className="mr-2"></span> Create Your AI HyCard
           </h1>
           
           <p className="text-center text-indigo-200 mb-8 max-w-xl mx-auto">
-            Transform your ideas into beautiful greeting cards with AI. The more descriptive your prompt, the better the results.
+            Transform your ideas into HyCards with AI. The more descriptive your prompt, the better the results.
           </p>
           
           <div className="relative mb-6">
@@ -42,7 +45,7 @@ export default function AIHyCard() {
               type="text"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe your perfect greeting card..."
+              placeholder="Describe your perfect HyCard..."
               className="w-full px-6 py-4 bg-white/20 backdrop-blur-sm border border-indigo-300/30 rounded-xl 
                          text-white placeholder-indigo-200 shadow-inner
                          focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
@@ -63,7 +66,7 @@ export default function AIHyCard() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Generating Magic...
+                  Generating your custom HyCard...
                 </div>
               ) : (
                 "Create AI HyCard"
@@ -89,19 +92,20 @@ export default function AIHyCard() {
                   onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     const target = e.target as HTMLImageElement;
                     target.onerror = null;
-                    target.src = "/placeholder-image.jpg"; // Fallback image path
+                    target.src = "/placeholder-image.jpg"; 
                     setError("Image failed to load. Try refreshing or generating a new one.");
                   }}
                 />
               </div>
               <div className="flex justify-between items-center mt-4 px-4">
                 <p className="text-indigo-200 font-medium">Your AI-generated HyCard</p>
-                <button 
-                  onClick={() => window.open(imageUrl, '_blank')}
-                  className="text-sm px-4 py-2 bg-indigo-600/40 hover:bg-indigo-600/60 rounded-lg transition-colors"
+                <a 
+                  href={imageUrl}
+                  download="hycard.jpg"
+                  className="text-sm px-4 py-2 bg-indigo-600/40 hover:bg-indigo-600/60 rounded-lg transition-colors cursor-pointer"
                 >
-                  Open Full Size
-                </button>
+                  Download your AI-HyCard!
+                </a>
               </div>
             </div>
           </div>
@@ -109,7 +113,7 @@ export default function AIHyCard() {
       </div>
       
       <div className="mt-8 text-indigo-300 text-sm text-center max-w-md">
-        <p>Try prompts like "birthday celebration with balloons and cake", "congratulations on your new job", or "sympathy card with flowers"</p>
+        <p>Try prompts like "birthday celebration with dog wearing a party hat", "congratulations on your new job, comical", or "Anniversary card with"</p>
       </div>
     </div>
   );

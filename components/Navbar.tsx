@@ -1,5 +1,5 @@
-//References: 1: https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/
-//2: https://www.youtube.com/watch?v=8s4DK5PkRNQ&ab_channel=BrettWestwood-SoftwareEngineer
+//References: 1: Next.js layouts: https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/
+//2: Nav Bar Tutorial: https://www.youtube.com/watch?v=8s4DK5PkRNQ&ab_channel=BrettWestwood-SoftwareEngineer
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -11,33 +11,37 @@ export default function Navbar() {
   const [userType, setUserType] = useState<string | null>(null);
   const router = useRouter();
 
+  //Checks for authentication status  
   useEffect(() => {
     const checkAuthStatus = () => {
       const token = localStorage.getItem("token");
       const storedUserType = localStorage.getItem("user_type");
 
+      //Sets isAuthenticated to true if token exists or user type is admin/advertiser
       setIsAuthenticated(!!token || storedUserType === "admin" || storedUserType === "advertiser");
       setUserType(storedUserType);
     };
 
-    // Run immediately when component mounts
+    //Checks for authentication status
     checkAuthStatus();
 
-    // Listen for storage changes (when user logs in or logs out)
+    //Listens for storage changes (when user logs in or logs out)
     window.addEventListener("storage", checkAuthStatus);
 
+    //Checks for changes in authentication status
     return () => {
       window.removeEventListener("storage", checkAuthStatus);
     };
   }, []);
 
+  //Ensures user type is cleared from localStorage and user is logged out
   const handleLogout = () => {
     logout();
-    localStorage.removeItem("user_type"); // Ensure user type is cleared
+    localStorage.removeItem("user_type"); 
     setIsAuthenticated(false);
     setUserType(null);
 
-    // Dispatch event to notify components about logout
+    //Notifies components of user logout
     window.dispatchEvent(new Event("storage"));
 
     alert("You have been logged out.");

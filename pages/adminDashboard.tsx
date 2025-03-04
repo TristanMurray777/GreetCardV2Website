@@ -1,12 +1,16 @@
+//References: 1: Charts: https://recharts.org/en-US/api/Pie
+//2: Charts: https://www.geeksforgeeks.org/create-a-pie-chart-using-recharts-in-reactjs/
+//3: Charts: https://posthog.com/tutorials/recharts
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { getUserCountReport, getSalesSummaryReport, publishReport } from "../utils/api";
 
+//Defines the structure of the user count
 interface UserCount {
   user_type: string;
   count: number;
 }
-
+//Defines the structure of the sales summary
 interface SalesSummary {
   total_sales: number;
   top_products: { name: string; total_purchases: number }[];
@@ -19,6 +23,8 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   const [generatedReport, setGeneratedReport] = useState("");
 
+
+
   // Fetch reports from the database
   useEffect(() => {
     async function fetchReports() {
@@ -28,9 +34,20 @@ export default function AdminDashboard() {
           getUserCountReport(),
           getSalesSummaryReport(),
         ]);
-
+  
+        console.log("Fetched Sales Data:", salesRes.data.top_products); // Debugging Line
+  
+        // Define the correct type for `product`
+        const formattedProducts = salesRes.data.top_products.map((product: { name: string; total_purchases: any }) => ({
+          name: product.name,
+          total_purchases: Number(product.total_purchases), // Convert to number
+        }));
+  
         setUserCounts(userRes.data);
-        setSalesSummary(salesRes.data);
+        setSalesSummary({
+          total_sales: salesRes.data.total_sales,
+          top_products: formattedProducts,
+        });
       } catch (err) {
         setError("Failed to load reports.");
       } finally {
@@ -39,6 +56,8 @@ export default function AdminDashboard() {
     }
     fetchReports();
   }, []);
+  
+  
 
   // Generate Report from fetched data
   const generateReport = () => {
@@ -74,20 +93,21 @@ export default function AdminDashboard() {
   };
 
   // Modern color palette that works well with purple background
-  const colors = ["#F9C80E", "#F86624", "#EA3546", "#662E9B", "#43BCCD"];
+  const colors = ["#4A90E2", "#50E3C2", "#F5A623", "#D0021B", "#9013FE"];
+
   
   // Card shadow for depth
   const cardStyle = "bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 transition-all hover:shadow-2xl";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-800 p-6 text-white">
+    <div className="min-h-screen p-6 text-white">
       {/* Header section with improved styling */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-center tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-violet-300">
+          <span className="bg-clip-text text-transparent text-white">
             Admin Dashboard
           </span>
-          <span className="ml-2">✨</span>
+    
         </h1>
         
         {loading && (
@@ -158,30 +178,37 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top products chart */}
-        <div className={cardStyle}>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Top 5 Purchased Cards</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie 
-                data={salesSummary.top_products} 
-                dataKey="total_purchases" 
-                nameKey="name" 
-                cx="50%" 
-                cy="50%" 
-                outerRadius={100}
-                labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              >
-                {salesSummary.top_products.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }} 
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+       <div className={cardStyle}>
+  <h2 className="text-xl font-semibold text-gray-800 mb-4">Top Purchased Cards</h2>
+
+  {salesSummary.top_products.length > 0 ? ( // Ensure there is data before rendering
+  
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={salesSummary.top_products}
+          dataKey="total_purchases"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          labelLine={false}
+          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+        >
+          {salesSummary.top_products.map((entry, index) => (
+            <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  ) : (
+    <div className="text-gray-500 text-center">No data available for pie chart.</div>
+  )}
+</div>
+
+
 
         {/* Generated report card */}
         {generatedReport && (
