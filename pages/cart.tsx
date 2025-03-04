@@ -25,9 +25,10 @@ export default function Cart() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userType, setUserType] = useState<string | null>(null); // Tracks user type (customer/retailer)
   const router = useRouter();
 
-  //Retrieves JWT from localstorage, vaidates it and fetches cart data
+  //Retrieves JWT from localstorage, validates it and fetches cart data
   useEffect(() => {
     async function fetchCart() {
       try {
@@ -36,6 +37,10 @@ export default function Cart() {
 
         const response = await getCart(token);
         setCart(response.data);
+
+        // Retrieves user type from localStorage
+        const storedUserType = localStorage.getItem("user_type");
+        setUserType(storedUserType);
       } catch (err) {
         setError("Failed to load cart.");
       } finally {
@@ -47,15 +52,21 @@ export default function Cart() {
 
   //Calculates total cost of all items in cart. If card is not preloaded, preload_amount defaults to 0. *Note* This function was developed in conjunction with ChatGPT. Model - o4. Prompt: Help me to calculate the total cost of all items in a react.js shopping cart. 
   const calculateTotal = () => {
-    return cart.reduce((sum, item) => 
+    let total = cart.reduce((sum, item) => 
       sum + (Number(item.price) * item.quantity) + Number(item.preload_amount || 0), 0
-    ).toFixed(2);
+    );
+
+    // Apply 20% discount if the user is a retailer
+    if (userType === "retailer") {
+      total *= 0.8; // Apply discount
+    }
+
+    return total.toFixed(2);
   };
 
   //Troubleshooting
   if (loading) return <p className="text-center text-gray-600">Loading cart...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
-
 
   //Displays cart items
   return (
@@ -96,6 +107,11 @@ export default function Cart() {
               </p>
             </div>
           ))}
+
+          {/* Displays discount message if user is a retailer */}
+          {userType === "retailer" && (
+            <p className="text-green-600 font-bold text-lg mt-4">Retailer Discount Applied (-20%)</p>
+          )}
 
           {/* Returns total price */}
           <div className="mt-6 text-right">

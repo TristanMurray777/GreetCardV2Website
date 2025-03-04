@@ -84,4 +84,10 @@ export const getPublishedReport = async () => {
   return axios.get(`${API_BASE_URL}/reports/published`);
 };
 
-
+// AI Image Generation (DALL·E)
+export const dalle = {
+  generateImage: async (prompt) => {
+    const response = await axios.post(`${API_BASE_URL}/generate-image`, { prompt });
+    return response.data;
+  },
+};

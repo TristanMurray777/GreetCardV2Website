@@ -13,7 +13,7 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
+const { Configuration, OpenAIApi } = require("openai");
 
 //Sets up express app on port 2000
 const app = express();
@@ -209,6 +209,10 @@ app.post("/checkout", authenticateToken, (req, res) => {
       return res.status(400).json({ error: "Cart is empty. Cannot checkout." });
     }
 
+    if (userType === "retailer") {
+      totalPrice *= 0.8;
+    }
+
     //*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: Continuation of checkout prompt
     //Creates order
     const insertOrderQuery = `INSERT INTO orders (cust_id, total_price, status) VALUES (?, ?, 'Pending')`;
@@ -333,3 +337,30 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+const OpenAI = require("openai");
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,  // Ensure this key is set in .env
+});
+
+
+// AI Image Generation Route
+app.post("/generate-image", async (req, res) => {
+  const { prompt } = req.body;
+
+  try {
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `${prompt}, greeting card design,`,
+      size: "1024x1024",
+    });
+
+    res.json({ imageUrl: response.data[0].url });
+  } catch (error) {
+    console.error("Error generating image:", error);
+    res.status(500).json({ error: "Failed to generate image." });
+  }
+});
+

@@ -110,6 +110,13 @@ export default function Navbar() {
             </p>
           </Link>
 
+          <Link href="/aiHyCard">
+              <p onClick={() => setIsOpen(false)} className="block py-2 px-4 rounded-md hover:bg-gray-700 cursor-pointer">
+              🎨 Create AI HyCard
+              </p>
+            </Link>
+
+
           {/* Conditional Navigation for Admin and Advertiser */}
           {userType === "admin" && (
             <Link href="/adminDashboard">

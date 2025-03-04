@@ -32,19 +32,26 @@ export default function Checkout() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("User is not authenticated");
 
-      const response = await checkout(token);
-      setTotal(response.data.total);
-      setFormSubmitted(true); 
-    } catch (err) {
-      if (err instanceof Error) {
-        setError((err as any).response?.data?.error || err.message || "Checkout failed.");
-      } else {
-        setError("Checkout failed.");
-      }
-    } finally {
-      setLoading(false);
+         //Gets user type
+    const storedUserType = localStorage.getItem("user_type");
+
+    //Fetches cart total price
+    const response = await checkout(token);
+    let finalTotal = response.data.total;
+
+    //Applies 20% discount if user is a retailer
+    if (storedUserType === "retailer") {
+      finalTotal *= 0.8;
     }
-  };
+
+    setTotal(finalTotal.toFixed(2));
+    setFormSubmitted(true); 
+  } catch (err) {
+    setError("Checkout failed.");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   //Displays UI for checkout form
