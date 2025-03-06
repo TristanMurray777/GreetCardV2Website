@@ -1,6 +1,7 @@
 //References: 1: Charts: https://recharts.org/en-US/api/Pie
 //2: Charts: https://www.geeksforgeeks.org/create-a-pie-chart-using-recharts-in-reactjs/
 //3: Charts: https://posthog.com/tutorials/recharts
+
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { getUserCountReport, getSalesSummaryReport, publishReport } from "../utils/api";
@@ -25,7 +26,7 @@ export default function AdminDashboard() {
 
 
 
-  // Fetch reports from the database
+  //Fetches reports from the database
   useEffect(() => {
     async function fetchReports() {
       setLoading(true);
@@ -35,12 +36,11 @@ export default function AdminDashboard() {
           getSalesSummaryReport(),
         ]);
   
-        console.log("Fetched Sales Data:", salesRes.data.top_products); // Debugging Line
   
-        // Define the correct type for `product`
+        //Defines the correct type for `product`, converts it to a number and returns it. This was added in to debug an issue where piechart data was being returned as a string
         const formattedProducts = salesRes.data.top_products.map((product: { name: string; total_purchases: any }) => ({
           name: product.name,
-          total_purchases: Number(product.total_purchases), // Convert to number
+          total_purchases: Number(product.total_purchases), 
         }));
   
         setUserCounts(userRes.data);
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
   
   
 
-  // Generate Report from fetched data
+  //Generates Report from fetched data
   const generateReport = () => {
     const report = `
       HyCards Sales Report 📊
@@ -75,14 +75,14 @@ export default function AdminDashboard() {
     setGeneratedReport(report);
   };
 
-  // Publish Report
+  //Publishes Report
   const handlePublishReport = async () => {
     if (!generatedReport) {
       alert("Generate the report first!");
       return;
     }
   
-    // Prepare structured JSON report
+    //Prepares structured JSON report
     const reportData = JSON.stringify({
       userCounts,
       salesSummary
@@ -92,16 +92,17 @@ export default function AdminDashboard() {
     alert("Report Published!");
   };
 
-  // Modern color palette that works well with purple background
+  //Defines colour scheme to be used in charts
   const colors = ["#4A90E2", "#50E3C2", "#F5A623", "#D0021B", "#9013FE"];
 
   
-  // Card shadow for depth
+  //Card shadow for design
   const cardStyle = "bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 transition-all hover:shadow-2xl";
 
+  //Renders UI
   return (
+
     <div className="min-h-screen p-6 text-white">
-      {/* Header section with improved styling */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-center tracking-tight">
           <span className="bg-clip-text text-transparent text-white">
@@ -158,7 +159,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* User distribution chart */}
+        {/* User distribution barchart */}
         <div className={cardStyle}>
           <h2 className="text-xl font-semibold text-gray-800 mb-4">User Distribution</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -177,11 +178,11 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Top products chart */}
+        {/* Top product category pie chart */}
        <div className={cardStyle}>
   <h2 className="text-xl font-semibold text-gray-800 mb-4">Top Purchased Cards</h2>
 
-  {salesSummary.top_products.length > 0 ? ( // Ensure there is data before rendering
+  {salesSummary.top_products.length > 0 ? ( //Ensures there is data before rendering. 
   
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>

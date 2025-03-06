@@ -20,18 +20,18 @@ export default function Login() {
     try {
       const response = await login(username, password);
   
-      // Stores user type in localStorage for navigation
+      //Stores user type in localStorage for navigation
       localStorage.setItem("user_type", response.data.user_type);
   
-      // Stores JWT for authentication if user is a customer/retailer
+      //Stores JWT for authentication if user is a customer/retailer
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
   
-      // Dispatch a custom event to notify other components (like Navbar) about login status
+      //Dispatches a custom event to notify other components (like Navbar) about login status
       window.dispatchEvent(new Event("storage"));
   
-      // Redirect user based on role
+      //Redirects user based on role
       if (response.data.user_type === "admin") {
         router.push("/adminDashboard");
       } else if (response.data.user_type === "advertiser") {
@@ -44,7 +44,7 @@ export default function Login() {
     }
   };
   
-
+  //UI for login form
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

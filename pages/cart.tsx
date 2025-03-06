@@ -56,9 +56,9 @@ export default function Cart() {
       sum + (Number(item.price) * item.quantity) + Number(item.preload_amount || 0), 0
     );
 
-    // Apply 20% discount if the user is a retailer
+    //Applies 20% discount if the user is a retailer
     if (userType === "retailer") {
-      total *= 0.8; // Apply discount
+      total *= 0.8; 
     }
 
     return total.toFixed(2);

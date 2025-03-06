@@ -89,7 +89,7 @@ app.post("/login", (req, res) => {
     return res.json({ message: "Login successful", user_type: "advertiser" });
   }
 
-  // 🔹 Database authentication for Customers & Retailers
+  //Authentication for Customers & Retailers
   if (!username || !password) {
     return res.status(400).json({ error: "Missing fields" });
   }
@@ -104,7 +104,7 @@ app.post("/login", (req, res) => {
 
     const customer = results[0];
 
-    // Logs errors for troubleshooting
+    //Logs errors for troubleshooting
     console.log("Stored Password (Hashed):", customer.password);
     console.log("Entered Password (Plain):", password);
 
@@ -114,14 +114,14 @@ app.post("/login", (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      // Generates JWT token for customers and retailers
+      //Generates JWT token for customers and retailers
       const token = jwt.sign(
         { cust_id: customer.cust_id, username: customer.username, user_type: customer.user_type },
         SECRET_KEY,
         { expiresIn: "1h" }
       );
 
-      // Returns JWT + user type
+      //Returns JWT + user type
       res.json({ message: "Login successful", token, user_type: customer.user_type });
     } catch (error) {
       res.status(500).json({ error: "Error verifying password" });
@@ -265,7 +265,7 @@ app.get("/reports/user-count", (req, res) => {
 });
 
 
-// Fetches total sales and most purchased HyCards (Fix for duplicate product names)
+//Fetches total sales and most purchased HyCards (Fix for duplicate product names)
 app.get("/reports/sales-summary", (req, res) => {
   const query = `
     SELECT p.name, SUM(oi.quantity) AS total_purchases 
@@ -279,7 +279,7 @@ app.get("/reports/sales-summary", (req, res) => {
   db.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
-    // Fetch total sales
+    //Fetch total sales
     const totalSalesQuery = `SELECT SUM(total_price) AS total_sales FROM orders WHERE status = 'Completed'`;
     db.query(totalSalesQuery, (err, salesResults) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -346,11 +346,11 @@ app.listen(PORT, () => {
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,  // Ensure this key is set in .env
+  apiKey: process.env.OPENAI_API_KEY,  
 });
 
 
-// AI Image Generation Route
+//AI Image Generation Route
 app.post("/generate-image", async (req, res) => {
   const { prompt } = req.body;
 

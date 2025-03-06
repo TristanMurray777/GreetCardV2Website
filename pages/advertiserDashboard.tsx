@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { getPublishedReport } from "../utils/api";
 
+
 export default function AdvertiserDashboard() {
   const [publishedReport, setPublishedReport] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -16,6 +17,7 @@ export default function AdvertiserDashboard() {
     top_products: [],
   });
 
+
   useEffect(() => {
     async function fetchReport() {
       setLoading(true);
@@ -24,7 +26,7 @@ export default function AdvertiserDashboard() {
         const reportData = response.data.report;
         setPublishedReport(reportData);
 
-        // Extract data from the report (assuming JSON format is used for publishing)
+        //Extracts data from the report (assuming JSON format is used for publishing)
         const parsedReport = JSON.parse(reportData);
         setUserCounts(parsedReport.userCounts);
         setSalesSummary(parsedReport.salesSummary);
@@ -38,11 +40,11 @@ export default function AdvertiserDashboard() {
     fetchReport();
   }, []);
 
-  // Modern color palette that works well with purple background
+  //Declaring colours to be used in the charts/graphs
   const colors = ["#4A90E2", "#50E3C2", "#F5A623", "#D0021B", "#9013FE"];
 
   
-  // Card shadow for depth
+  //Card shadow for design
   const cardStyle = "bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 transition-all hover:shadow-2xl";
   
   return (
@@ -99,7 +101,7 @@ export default function AdvertiserDashboard() {
               </div>
             </div>
 
-            {/* User distribution chart */}
+            {/* User distribution barchart */}
             <div className={cardStyle}>
               <h2 className="text-xl font-semibold text-gray-800 mb-4">User Distribution</h2>
               <ResponsiveContainer width="100%" height={300}>
