@@ -1,5 +1,6 @@
-//References: 1. Expo routing: https://www.youtube.com/watch?v=WNZbARN7lMM&ab_channel=AaronSaunders
-//2: https://www.youtube.com/watch?v=j4Ms4CSDR60&ab_channel=CodingPartner
+//References: 1. React Routing: https://reactrouter.com/home
+//2: React Login/Signup page: https://www.youtube.com/watch?v=j4Ms4CSDR60&ab_channel=CodingPartner
+//3: JWT Management: https://devdotcode.com/complete-jwt-authentication-and-authorization-system-for-mysql-node-js-api/
 
 import { useState } from "react";
 import { useRouter } from "next/router";

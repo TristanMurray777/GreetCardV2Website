@@ -1,9 +1,9 @@
 //References: *NOTE* - A lot of this page was developed in conjunction with ChatGPT. Model - o4. Mainly involves SQL queries, is referenced below
-//1. https://devdotcode.com/complete-jwt-authentication-and-authorization-system-for-mysql-node-js-api/
-//2. https://www.youtube.com/watch?v=V5xoeyOtgIA&t=984s&ab_channel=Webslesson
-//3. https://blog.logrocket.com/build-rest-api-node-express-mysql/
-//4. https://www.youtube.com/watch?v=jtHS3OC64V4&ab_channel=ARCTutorials
-//5. https://www.youtube.com/watch?v=88hYFUpNJ8A&ab_channel=ARCTutorials
+//1. JWT Authentication: https://devdotcode.com/complete-jwt-authentication-and-authorization-system-for-mysql-node-js-api/
+//2. Node.js Cart Tutorial: https://www.youtube.com/watch?v=V5xoeyOtgIA&t=984s&ab_channel=Webslesson
+//3. Rest API Tutorial: https://blog.logrocket.com/build-rest-api-node-express-mysql/
+//4. Node.js CRUD Tutorial: https://www.youtube.com/watch?v=jtHS3OC64V4&ab_channel=ARCTutorials
+//5. Node.js CRUD Tutorial: https://www.youtube.com/watch?v=88hYFUpNJ8A&ab_channel=ARCTutorials
 //6. OpenAI Integration : https://platform.openai.com/docs/overview, https://www.freecodecamp.org/news/generate-images-using-react-and-dall-e-api-react-and-openai-api-tutorial/, https://www.youtube.com/watch?v=oacBV4tnuYQ&ab_channel=Cybernatico
 
 //Imports dependencies + sets up environment
@@ -41,7 +41,7 @@ db.connect((err) => {
   console.log("Connected to MySQL Database");
 });
 
-//Middleware that verifies the JWT token. Extracts JWT toke, verifies it, and attaches user data to the request
+//Middleware that verifies the JWT token. Extracts JWT token, verifies it, and attaches user data to the request
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization");
   if (!token || !token.startsWith("Bearer ")) return res.status(401).json({ error: "Access denied" });
@@ -80,7 +80,7 @@ app.post("/signup", async (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // 🔹 Hardcoded login for Admin and Advertiser (Bypasses DB)
+  //Hardcoded login for Admin and Advertiser (Bypasses DB)
   if (username === "Admin" && password === "1234") {
     return res.json({ message: "Login successful", user_type: "admin" });
   }
@@ -266,12 +266,13 @@ app.get("/reports/user-count", (req, res) => {
 
 
 //Fetches total sales and most purchased HyCards (Fix for duplicate product names)
+//SQL developed in conjunction with ChatGPT. Model - o4. Prompt: "Create a route that generates a sales summary report. The route should return the total sales and the top 3 most purchased products. The route should require user authentication using a JWT token."
 app.get("/reports/sales-summary", (req, res) => {
   const query = `
     SELECT p.name, SUM(oi.quantity) AS total_purchases 
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
-    GROUP BY p.name  -- Ensures product names are unique
+    GROUP BY p.name  
     ORDER BY total_purchases DESC
     LIMIT 3;
   `;

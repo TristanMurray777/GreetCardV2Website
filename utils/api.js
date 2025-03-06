@@ -1,6 +1,6 @@
-//References: 1. https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
-//2. https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
-//3. https://www.youtube.com/watch?v=1MtHkHpUbS4&t=1033s&ab_channel=TechCheck
+//References: 1. User Management API: https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
+//2. Login API: https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
+//3. AI Implementation: https://platform.openai.com/docs/api-reference/introduction
 import axios from "axios";
 
 //Sets API base url so that it can be changes easily
@@ -15,7 +15,7 @@ export const signup = async (username, password, user_type) => {
 export const login = async (username, password) => {
   const response = await axios.post(`${API_BASE_URL}/login`, { username, password });
   localStorage.setItem("token", response.data.token);
-  localStorage.setItem("user_type", response.data.user_type); // Store user type
+  localStorage.setItem("user_type", response.data.user_type); //Store user type
   return response;
 };
 

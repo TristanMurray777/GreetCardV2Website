@@ -1,5 +1,6 @@
 //References: 1: Next.js layouts: https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/
 //2: Nav Bar Tutorial: https://www.youtube.com/watch?v=8s4DK5PkRNQ&ab_channel=BrettWestwood-SoftwareEngineer
+//3: ChatGPT-4o: Used to generate the code to update the navbar to reflect what user type is logged in. Prompt: "How can I make this navbar change to reflect what user is logged in? For example, if an admin is logged in, the option to view the admin dashboard will appear."
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";

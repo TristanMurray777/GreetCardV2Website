@@ -1,4 +1,4 @@
-//References: 1: https://www.youtube.com/watch?v=BirEFPNAry4&t=36s&ab_channel=EasyLearning
+//References: 1: Custom _document tutorial: https://www.youtube.com/watch?v=BirEFPNAry4&t=36s&ab_channel=EasyLearning
 //This page is used to modfy the server-side rendered HTML document
 import { Html, Head, Main, NextScript } from 'next/document';
 

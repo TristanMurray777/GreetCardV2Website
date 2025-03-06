@@ -1,6 +1,7 @@
 //References: 1: Charts: https://recharts.org/en-US/api/Pie
 //2: Charts: https://www.geeksforgeeks.org/create-a-pie-chart-using-recharts-in-reactjs/
 //3: Charts: https://posthog.com/tutorials/recharts
+//4: Recharts Tutorial: https://www.youtube.com/watch?v=FbUumRuvzYI&ab_channel=ui-code-tv
 
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
@@ -49,7 +50,7 @@ export default function AdvertiserDashboard() {
   
   return (
     <div className="min-h-screen p-6 text-white">
-      {/* Header section with improved styling */}
+      {/* Header section */}
       <header className="mb-8">
         <h1 className="text-4xl font-bold text-center tracking-tight">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-violet-300">
@@ -69,7 +70,7 @@ export default function AdvertiserDashboard() {
         )}
       </header>
 
-      {/* Main content area */}
+      {/* Main content*/}
       <div className="max-w-7xl mx-auto">
         {error ? (
           <div className={`${cardStyle} text-center p-10`}>
@@ -87,11 +88,11 @@ export default function AdvertiserDashboard() {
             <div className={`${cardStyle} md:col-span-2`}>
               <div className="flex justify-between items-center">
                 <div className="text-gray-800">
-                  <h2 className="text-xl font-semibold mb-2">Sales Overview</h2>
+                  <h2 className="text-xl font-semibold mb-2">Revenue Overview</h2>
                   <div className="text-3xl font-bold text-indigo-700">
                     €{(Number(salesSummary.total_sales) || 0).toFixed(2)}
                   </div>
-                  <p className="text-gray-500">Total Sales</p>
+                  <p className="text-gray-500">HyCard Revenue</p>
                 </div>
                 
                 <div className="bg-indigo-100 p-4 rounded-lg">
@@ -127,7 +128,7 @@ export default function AdvertiserDashboard() {
 
             {/* Top products chart */}
             <div className={cardStyle}>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Top 5 Purchased Cards</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Top 3 HyCard Categories</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie 
@@ -158,7 +159,7 @@ export default function AdvertiserDashboard() {
             
             {/* Additional insights card */}
             <div className={`${cardStyle} md:col-span-2 mt-6`}>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Campaign Insights</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Key Performance Indicators</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-lg">
                   <h3 className="text-indigo-700 font-medium">User Growth</h3>
@@ -179,7 +180,7 @@ export default function AdvertiserDashboard() {
                 </div>
                 
                 <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-lg">
-                  <h3 className="text-teal-700 font-medium">Top Product</h3>
+                  <h3 className="text-teal-700 font-medium">Most popular HyCard</h3>
                   <p className="text-2xl font-bold text-gray-800 mt-2 truncate">
                     {salesSummary.top_products[0]?.name || "N/A"}
                   </p>

@@ -1,5 +1,5 @@
-//References: 1: https://www.youtube.com/watch?v=6rE3SO28Csg&ab_channel=Roman
-//2: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+//References: 1: Custom checkout page: https://www.youtube.com/watch?v=6rE3SO28Csg&ab_channel=Roman
+//2: Full E-Commerce App Tutorial: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
 import { useState } from "react";
 import { checkout } from "../utils/api";
 import { useRouter } from "next/router";
@@ -20,7 +20,7 @@ export default function Checkout() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (!name || !cardNumber || !address) {
       setError("All fields are required.");
       return;
@@ -32,25 +32,37 @@ export default function Checkout() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("User is not authenticated");
 
-         //Gets user type
-    const storedUserType = localStorage.getItem("user_type");
+      console.log("Checkout token:", token); //Debugging log
 
-    //Fetches cart total price
-    const response = await checkout(token);
-    let finalTotal = response.data.total;
+      //Gets user type
+      const storedUserType = localStorage.getItem("user_type");
 
-    //Applies 20% discount if user is a retailer
-    if (storedUserType === "retailer") {
-      finalTotal *= 0.8;
+      //Fetches cart total price
+      const response = await checkout(token);
+      console.log("Checkout API Response:", response); //Debugging log
+
+      //Ensure response is successful
+      if (response.status === 200 && response.data?.total !== undefined) {
+        let finalTotal = parseFloat(response.data.total); //Converts string to number
+
+        //Applies 20% discount if user is a retailer
+        if (storedUserType === "retailer") {
+          finalTotal *= 0.8;
+        }
+
+        setTotal(finalTotal); //Ensures number type is set
+        setFormSubmitted(true);
+        setError(""); //Clears any previous errors
+      } else {
+        console.error("Unexpected API response format:", response);
+        setError("Unexpected response from server. Please try again.");
+      }
+    } catch (err) {
+      console.error("Checkout Error:", err);
+      setError("An error occurred during checkout. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setTotal(finalTotal.toFixed(2));
-    setFormSubmitted(true); 
-  } catch (err) {
-    setError("Checkout failed.");
-  } finally {
-    setLoading(false);
-  }
 };
 
 

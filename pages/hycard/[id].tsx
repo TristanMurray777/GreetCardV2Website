@@ -1,5 +1,5 @@
-//References: 1: https://www.youtube.com/watch?v=F7fNEkSHvEw&ab_channel=JBWEBDEVELOPER
-//2: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
+//References: 1: Single product data tutorial:  https://www.youtube.com/watch?v=F7fNEkSHvEw&ab_channel=JBWEBDEVELOPER
+//2: Allowing users to upload their own photos: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";

@@ -1,15 +1,17 @@
 //References: 1: AI Implementation - https://www.youtube.com/watch?v=oacBV4tnuYQ&ab_channel=Cybernatico
 //2: AI Implementation - https://www.freecodecamp.org/news/generate-images-using-react-and-dall-e-api-react-and-openai-api-tutorial/
-//3: 
+//3: Claude-3.7 Sonnet: Used to redesign the page visually. Prompt: "How can I make this page look more modern?"
 import { useState } from "react";
 import { dalle } from "../utils/api";
 
+//Defines the AIHyCard function
 export default function AIHyCard() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+    //Generates the image
   const generateImage = async () => {
     if (!prompt.trim()) {
       setError("Please enter a prompt.");
@@ -18,6 +20,7 @@ export default function AIHyCard() {
     setLoading(true);
     setError("");
 
+    //Calls the DALL-E API to generate the image, ensures that it only returns greeting card designs
     try {
       const response = await dalle.generateImage(`${prompt}, greeting card design`);
       setImageUrl(response.imageUrl);
@@ -28,6 +31,7 @@ export default function AIHyCard() {
     }
   };
 
+  //UI for the AIHyCard page
   return (
     <div className="min-h-screen text-white p-6 flex flex-col items-center justify-center">
       <div className="w-full max-w-3xl bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
@@ -113,7 +117,7 @@ export default function AIHyCard() {
       </div>
       
       <div className="mt-8 text-indigo-300 text-sm text-center max-w-md">
-        <p>Try prompts like "birthday celebration with dog wearing a party hat", "congratulations on your new job, comical", or "Anniversary card with"</p>
+        <p>Try prompts like "birthday celebration with dog wearing a party hat", "congratulations on your new job, comical", or "Anniversary card with roses"</p>
       </div>
     </div>
   );

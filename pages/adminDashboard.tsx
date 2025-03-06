@@ -1,6 +1,9 @@
 //References: 1: Charts: https://recharts.org/en-US/api/Pie
 //2: Charts: https://www.geeksforgeeks.org/create-a-pie-chart-using-recharts-in-reactjs/
 //3: Charts: https://posthog.com/tutorials/recharts
+//4: Recharts Tutorial: https://www.youtube.com/watch?v=FbUumRuvzYI&ab_channel=ui-code-tv
+//5: This feature was developed in conjunction with ChatGPT-4o: Prompt: "Help me to create an admin dashboard that can be published. I want this dashboard to use real data from the database"
+
 
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
@@ -26,7 +29,7 @@ export default function AdminDashboard() {
 
 
 
-  //Fetches reports from the database
+  //Fetches reports from the storage
   useEffect(() => {
     async function fetchReports() {
       setLoading(true);
@@ -182,7 +185,7 @@ export default function AdminDashboard() {
        <div className={cardStyle}>
   <h2 className="text-xl font-semibold text-gray-800 mb-4">Top Purchased Cards</h2>
 
-  {salesSummary.top_products.length > 0 ? ( //Ensures there is data before rendering. 
+  {salesSummary.top_products.length > 0 ? ( //Ensures there is data before rendering
   
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>

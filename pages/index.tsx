@@ -1,4 +1,4 @@
-//References: 1: https://docs.expo.dev/versions/latest/sdk/router/
+//References: 1: React router: https://reactrouter.com/home
 //This page is used to redirect the user to the home page
 import { useEffect } from "react";
 import { useRouter } from "next/router";

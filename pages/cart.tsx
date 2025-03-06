@@ -1,8 +1,7 @@
-//References: 1: https://blog.logrocket.com/building-a-next-js-shopping-cart-app/
-//2: https://www.youtube.com/watch?v=aAldUjdRyPA&t=629s&ab_channel=TechCheck
-//3: https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
-//4: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
-
+//References: 1: Next.JS shopping cart app: https://blog.logrocket.com/building-a-next-js-shopping-cart-app/
+//2: Creating a user management API with Node.js and Express: https://blog.postman.com/how-to-create-a-rest-api-with-node-js-and-express/#6
+//3: Full E-Commerce App Tutorial: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+//4: ChatGPT. Model - o4. Prompt: "Help me to calculate the total cost of all items in a react.js shopping cart."
 import { useEffect, useState } from "react";
 import { getCart } from "../utils/api";
 import "../styles/globals.css";

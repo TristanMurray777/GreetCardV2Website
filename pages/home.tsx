@@ -1,4 +1,6 @@
-//References: 1: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+//References: 1: Full E-Commerce App Tutorial: https://www.youtube.com/watch?v=I0BOUiFe9WY&ab_channel=LamaDev
+//2: Implementing bulk order feature (Limiting results): https://dev.to/rifkyalfarez/nextjs-api-management-implement-search-pagination-filter-sort-and-limit-features-411i
+//3: Implementing bulk order feature: ChatGPT. Model - o4. Prompt: "Help me to add a bulk order feature for a retailer to my react.js project."
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getProducts, addToCart } from "../utils/api"; 
