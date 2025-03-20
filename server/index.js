@@ -210,9 +210,6 @@ app.post("/checkout", authenticateToken, (req, res) => {
       return res.status(400).json({ error: "Cart is empty. Cannot checkout." });
     }
 
-    if (userType === "retailer") {
-      totalPrice *= 0.8;
-    }
 
     //*NOTE* - This feature was developed in conjunction with Chatgpt. Model - o4. Prompt: Continuation of checkout prompt
     //Creates order
